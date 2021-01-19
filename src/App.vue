@@ -1,32 +1,43 @@
 <template>
-  <div id="app">
+<div id="app">
+    Esto siempre existe
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+        <router-link to="/">Home</router-link> |
+        <template v-if="!authenticated">
+            <router-link to="/signin">Sign in</router-link> |
+        </template>
+        <template v-else>
+            <router-link to="/otra">Otra</router-link> |
+            <router-link to="/account">{{ user.name }}</router-link> |
+            <a href="#" @click.prevent="signOut">Sign out</a>
+        </template>
     </div>
     <router-view />
-  </div>
+</div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import  { mapGetters, mapActions } from 'vuex'
 
-#nav {
-  padding: 30px;
-}
+export default {
+    computed: {
+        ...mapGetters({
+            authenticated: 'auth/authenticated',
+            user: 'auth/user',
+        })
+    },
+    methods: {
+        ...mapActions({
+            signOutAction: 'auth/signOut'
+        }),
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+        async signOut() {
+            await this.signOutAction()
 
-#nav a.router-link-exact-active {
-  color: #42b983;
+            this.$router.replace({
+                name: 'home'
+            })
+        }
+    }
 }
-</style>
+</script>
